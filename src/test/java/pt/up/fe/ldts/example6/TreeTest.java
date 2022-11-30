@@ -1,81 +1,80 @@
 package pt.up.fe.ldts.example6;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.*;
 
 public class TreeTest {
     public Tree tree;
-    public Date date;
-
-    @Before
+    public LocalDateTime date;
+    @BeforeEach
     public void setUp() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-        date = sdf.parse("31-08-2002 10:20:56");
+        date = sdf.parse("31-08-2002 10:20:56").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         tree = new Tree(date, "41.177772696363114", "-8.59843522310257", "FEUP");
     }
 
     @Test
     public void testTreeCreation() {
-        assertEquals(tree.plantedAt, date);
-        assertEquals(tree.locationLatitude, "41.177772696363114");
-        assertEquals(tree.locationLongitude, "-8.59843522310257");
-        assertEquals(tree.locationName, "FEUP");
+        Assertions.assertEquals(tree.plantedAt, date);
+        Assertions.assertEquals(tree.location.getLocationLatitude(), "41.177772696363114");
+        Assertions.assertEquals(tree.location.getLocationLongitude(), "-8.59843522310257");
+        Assertions.assertEquals(tree.location.getLocationName(), "FEUP");
     }
 
     @Test
     public void testTreeSetLocation() {
         tree.setLocation("loclat", "loclon", "locname");
-        assertEquals(tree.plantedAt, date);
-        assertEquals(tree.locationLatitude, "loclat");
-        assertEquals(tree.locationLongitude, "loclon");
-        assertEquals(tree.locationName, "locname");
+        Assertions.assertEquals(tree.plantedAt, date);
+        Assertions.assertEquals(tree.location.getLocationLatitude(), "loclat");
+        Assertions.assertEquals(tree.location.getLocationLongitude(), "loclon");
+        Assertions.assertEquals(tree.location.getLocationName(), "locname");
     }
 
     @Test
     public void testToString() {
         String result = tree.toString();
-        assertEquals("Tree planted at Sat Aug 31 10:20:56 WEST 2002 in location 41.177772696363114,-8.59843522310257 (FEUP)", result);
+        Assertions.assertEquals("Tree planted at 2002-08-31T10:20:56 in location 41.177772696363114,-8.59843522310257 (FEUP)", result);
     }
 
     @Test
     public void testAddAppraisal() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-        Date appraisalDate = sdf.parse("31-08-2002 10:20:56");
-
-        assertEquals(tree.getAppraisals().size(), 0);
+        LocalDateTime appraisalDate = sdf.parse("31-08-2002 10:20:56").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        Assertions.assertEquals(tree.getAppraisals().size(), 0);
         tree.addAppraisal(appraisalDate);
-        assertEquals(tree.getAppraisals().size(), 1);
+        Assertions.assertEquals(tree.getAppraisals().size(), 1);
     }
 
+    @SuppressWarnings("JavaUtilDate")
     @Test
     public void testNextAppraisalOverdue() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MONTH, -6);
-        Date appraisalDate = calendar.getTime();
-
-        assertFalse(tree.isNextAppraisalOverdue());
+        LocalDateTime appraisalDate = calendar.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        Assertions.assertFalse(tree.isNextAppraisalOverdue());
         tree.addAppraisal(appraisalDate);
-        assertTrue(tree.isNextAppraisalOverdue());
+        Assertions.assertTrue(tree.isNextAppraisalOverdue());
     }
 
+    @SuppressWarnings("JavaUtilDate")
     @Test
     public void testNextAppraisalNotOverdue() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MONTH, -1);
-        Date appraisalDate = calendar.getTime();
-
-        assertFalse(tree.isNextAppraisalOverdue());
+        LocalDateTime appraisalDate = calendar.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        Assertions.assertFalse(tree.isNextAppraisalOverdue());
         tree.addAppraisal(appraisalDate);
-        assertFalse(tree.isNextAppraisalOverdue());
+        Assertions.assertFalse(tree.isNextAppraisalOverdue());
     }
 
 }

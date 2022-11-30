@@ -1,44 +1,22 @@
 package pt.up.fe.ldts.example5;
 
 public class Turtle {
-    private int row;
-    private int column;
-    private char direction;
-
-    public Turtle(int row, int column, char direction) {
-        this.row = row;
-        this.column = column;
-        this.direction = direction;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public int getColumn() {
-        return column;
-    }
-
-    public char getDirection() {
-        return direction;
-    }
-
+    Position p;
+    public Turtle(int row, int column, char direction) {this.p = new Position(row, column, direction);}
+    public int getRow() {return p.getRow();}
+    public int getColumn() {return p.getColumn();}
+    public char getDirection() {return p.getDirection();}
+    public void setRow(int row) {p.setRow(row);}
+    public void setColumn(int column) {p.setColumn(column);}
+    public void setDirection(char direction) {p.setDirection(direction);}
+    public void setP(Position p) {this.p = p;}
     public void execute(char command) {
-        if (command == 'L') { // ROTATE LEFT
-            if (direction == 'N') direction = 'W';
-            else if (direction == 'W') direction = 'S';
-            else if (direction == 'S') direction = 'E';
-            else if (direction == 'E') direction = 'N';
-        } else if (command == 'R') { // ROTATE RIGHT
-            if (direction == 'N') direction = 'E';
-            else if (direction == 'E') direction = 'S';
-            else if (direction == 'S') direction = 'W';
-            else if (direction == 'W') direction = 'N';
-        } else if (command == 'F'){ // MOVE FORWARD
-            if (direction == 'N') row--;
-            if (direction == 'S') row++;
-            if (direction == 'W') column--;
-            if (direction == 'E') column++;
+        if (command == 'L') {
+            setP(new CommandL(p).execute());
+        } else if (command == 'R') {
+            setP(new CommandR(p).execute());
+        } else if (command == 'F'){
+            setP(new CommandF(p).execute());
         }
     }
 }
